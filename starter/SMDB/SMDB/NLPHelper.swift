@@ -33,96 +33,96 @@
 import NaturalLanguage
 
 func getLanguage(text: String) -> NLLanguage? {
-  NLLanguageRecognizer.dominantLanguage(for: text)
+    NLLanguageRecognizer.dominantLanguage(for: text)
 }
 
 func getPeopleNames(text: String, block: (String) -> Void) {
-
-  let tagger = NLTagger(tagSchemes: [.nameType])
-  tagger.string = text
-
-  let options: NLTagger.Options = [
-    .omitWhitespace, .omitPunctuation, .omitOther, .joinNames
-  ]
-
-  tagger.enumerateTags(
-    in: text.startIndex..<text.endIndex,
-    unit: .word,
-    scheme: .nameType,
-    options: options) { tag, tokenRange in
-    if tag == .personalName {
-      block(String(text[tokenRange]))
-    }
-    return true
-  }
+    
+    let tagger = NLTagger(tagSchemes: [.nameType])
+    tagger.string = text
+    
+    let options: NLTagger.Options = [
+        .omitWhitespace, .omitPunctuation, .omitOther, .joinNames
+    ]
+    
+    tagger.enumerateTags(
+        in: text.startIndex..<text.endIndex,
+        unit: .word,
+        scheme: .nameType,
+        options: options) { tag, tokenRange in
+            if tag == .personalName {
+                block(String(text[tokenRange]))
+            }
+            return true
+        }
 }
 
 // 1
 func getSearchTerms(text: String, language: String? = nil,
                     block: (String) -> Void) {
-
-  let tagger = NLTagger(tagSchemes: [.lemma])
-  tagger.string = text
-  
-  if let language = language {
-    tagger.setLanguage(NLLanguage(rawValue: language),
-                       range: text.startIndex..<text.endIndex)
-  }
-  
-  let options: NLTagger.Options = [
-    .omitWhitespace, .omitPunctuation, .omitOther, .joinNames
-  ]
-  
-  tagger.enumerateTags(
-    in: text.startIndex..<text.endIndex, unit: .word,
-    scheme: .lemma, options: options) { tag, tokenRange in
-      let token = String(text[tokenRange]).lowercased()
-
-      if let tag = tag {
-        let lemma = tag.rawValue.lowercased()
-        if lemma != token {
-          block(token)
-        }
-        block(lemma)
-      } else {
-        block(token)
-      }
-        
-      return true
+    
+    let tagger = NLTagger(tagSchemes: [.lemma])
+    tagger.string = text
+    
+    if let language = language {
+        tagger.setLanguage(NLLanguage(rawValue: language),
+                           range: text.startIndex..<text.endIndex)
     }
+    
+    let options: NLTagger.Options = [
+        .omitWhitespace, .omitPunctuation, .omitOther, .joinNames
+    ]
+    
+    tagger.enumerateTags(
+        in: text.startIndex..<text.endIndex, unit: .word,
+        scheme: .lemma, options: options) { tag, tokenRange in
+            let token = String(text[tokenRange]).lowercased()
+            
+            if let tag = tag {
+                let lemma = tag.rawValue.lowercased()
+                if lemma != token {
+                    block(token)
+                }
+                block(lemma)
+            } else {
+                block(token)
+            }
+            
+            return true
+        }
 }
 
 func analyzeSentiment(text: String) -> Double? {
-  let tagger = NLTagger(tagSchemes: [.sentimentScore])
-  tagger.string = text
-  let (tag, _) = tagger.tag(at: text.startIndex,
-                           unit: .paragraph,
-                           scheme: .sentimentScore)
-  guard let sentiment = tag,
-     let score = Double(sentiment.rawValue)
-     else { return nil }
-  return score
+    let tagger = NLTagger(tagSchemes: [.sentimentScore])
+    tagger.string = text
+    let (tag, _) = tagger.tag(at: text.startIndex,
+                              unit: .paragraph,
+                              scheme: .sentimentScore)
+    guard let sentiment = tag,
+          let score = Double(sentiment.rawValue)
+    else { return nil }
+    return score
 }
 
 func getSentimentClassifier() -> NLModel? {
-  try! NLModel(mlModel: SentimentClassifier().model)
+    try! NLModel(mlModel: SentimentClassifier().model)
 }
 
 func predictSentiment(
-  text: String, sentimentClassifier: NLModel) -> String? {
-  sentimentClassifier.predictedLabel(for: text)
-}
+    text: String, sentimentClassifier: NLModel) -> String? {
+        sentimentClassifier.predictedLabel(for: text)
+    }
 
 // ------------------------------------------------------------------
 // -------  Everything below here is for translation chapters -------
 // ------------------------------------------------------------------
 
 func getSentences(text: String) -> [String] {
-  // To be replaced
-  return []
+    // To be replaced
+    return []
 }
 
 func spanishToEnglish(text: String) -> String? {
-  // To be replaced
-  return nil
+    // To be replaced
+    return nil
 }
