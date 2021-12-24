@@ -118,8 +118,20 @@ func predictSentiment(
 // ------------------------------------------------------------------
 
 func getSentences(text: String) -> [String] {
-    // To be replaced
-    return []
+    let splitedText = text.components(separatedBy: " ")
+    var appendingText: String = ""
+    var sentences: [String] = []
+    for i in splitedText {
+        if appendingText.count > 0 {
+            appendingText.append(contentsOf: " ")
+        }
+        appendingText.append(i)
+        if appendingText.hasSuffix(".") || appendingText.hasSuffix("?") || appendingText.hasSuffix("!") {
+            sentences.append(appendingText)
+            appendingText = ""
+        }
+    }
+    return sentences
 }
 
 func spanishToEnglish(text: String) -> String? {
